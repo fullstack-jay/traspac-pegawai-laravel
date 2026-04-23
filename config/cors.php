@@ -15,9 +15,9 @@ return [
     |
     */
 
-    'paths' => ['api/*'],
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['POST'],
+    'allowed_methods' => ['*'],
 
     'allowed_origins' => [
         'http://localhost:3000',   // Nuxt dev
@@ -26,7 +26,7 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Content-Type', 'Authorization', 'Accept'],
+    'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
 

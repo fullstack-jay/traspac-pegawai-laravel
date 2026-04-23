@@ -49,23 +49,37 @@ class UploadController extends Controller
     )]
     public function uploadPhoto(Request $request)
     {
-        $request->validate([
-            'file'        => 'required|image|mimes:jpg,jpeg,png|max:2048', // max 2MB
-            'employee_id' => 'nullable|integer',
-        ]);
+        try {
+            $request->validate([
+                'file'        => 'required|image|mimes:jpg,jpeg,png|max:2048', // max 2MB
+                'employee_id' => 'nullable|integer',
+            ]);
 
-        $file      = $request->file('file');
-        $filename  = Str::uuid() . '.' . $file->getClientOriginalExtension();
-        $path      = $file->storeAs('photos', $filename);
-        $url       = Storage::url($path);
+            $file      = $request->file('file');
+            $filename  = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $path      = $file->storeAs('photos', $filename);
+            $url       = Storage::url($path);
 
-        return response()->json([
-            'success' => true,
-            'data'    => [
-                'url'      => url($url),
-                'filename' => $filename,
-            ],
-        ]);
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'url'      => url($url),
+                    'filename' => $filename,
+                ],
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors'  => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal upload foto: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     #[OA\Post(
