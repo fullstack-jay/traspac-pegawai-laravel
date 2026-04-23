@@ -21,7 +21,7 @@ return [
 
     'allowed_origins' => [
         'http://localhost:3000',   // Nuxt dev
-        'https://simpeg.example.com', // Production
+        'https://traspac-pegawai.netlify.app'
     ],
 
     'allowed_origins_patterns' => [],
