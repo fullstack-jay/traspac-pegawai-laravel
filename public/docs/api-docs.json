@@ -1,0 +1,1225 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SIMPEG API",
+        "description": "API Documentation untuk SIMPEG (Sistem Informasi Manajemen Pegawai) BIG - Badan Informasi Geospasial",
+        "contact": {
+            "email": "admin@big.go.id"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login user",
+                "description": "Autentikasi user dengan username dan password",
+                "operationId": "dd51a484b7fa0f97c7680fdbde14cf5f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "description": "Username user",
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "description": "Password user",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "admin123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Administrator"
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin",
+                                                    "enum": [
+                                                        "admin",
+                                                        "operator",
+                                                        "viewer"
+                                                    ]
+                                                },
+                                                "unitKerja": {
+                                                    "type": "string",
+                                                    "example": "Semua Unit"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|abc123xyz..."
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Username atau password salah",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Username atau password salah"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout user",
+                "description": "Logout user dan hapus token autentikasi",
+                "operationId": "df9bdc6c7a6d9f20b983526b2ec0f698",
+                "responses": {
+                    "200": {
+                        "description": "Logout berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout berhasil"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/verify": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify token",
+                "description": "Verifikasi token aktif dan dapat data user yang sedang login",
+                "operationId": "4dbb51f1b97291077619f0128071ba94",
+                "responses": {
+                    "200": {
+                        "description": "Token valid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Administrator"
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "unitKerja": {
+                                                    "type": "string",
+                                                    "example": "Semua Unit"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/profile": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get profile",
+                "description": "Mendapatkan data profile user yang sedang login",
+                "operationId": "e30db52f8a812e064f7173518eb194d2",
+                "responses": {
+                    "200": {
+                        "description": "Data profile user",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Administrator"
+                                                },
+                                                "username": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "admin"
+                                                },
+                                                "unitKerja": {
+                                                    "type": "string",
+                                                    "example": "Semua Unit"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/employees/list": {
+            "post": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Daftar pegawai dengan pagination",
+                "description": "Mendapatkan daftar pegawai dengan filter, sorting, dan pagination",
+                "operationId": "d9258e908bb08221c9b9f7e771f3c475",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "search": {
+                                        "description": "Pencarian berdasarkan nama, nip, jabatan, atau unit kerja",
+                                        "type": "string",
+                                        "example": "saifulloh"
+                                    },
+                                    "unitKerja": {
+                                        "type": "string",
+                                        "example": "Sekretariat Utama"
+                                    },
+                                    "golongan": {
+                                        "type": "string",
+                                        "example": "IV/e"
+                                    },
+                                    "jenisKelamin": {
+                                        "type": "string",
+                                        "example": "L",
+                                        "enum": [
+                                            "L",
+                                            "P"
+                                        ]
+                                    },
+                                    "eselon": {
+                                        "type": "string",
+                                        "example": "I"
+                                    },
+                                    "sortColumn": {
+                                        "description": "Kolom untuk sorting (id, nama, nip, golongan, eselon, jabatan, unitKerja, createdAt)",
+                                        "type": "string",
+                                        "example": "id"
+                                    },
+                                    "sortColumnDir": {
+                                        "description": "Arah sorting (asc/desc)",
+                                        "type": "string",
+                                        "example": "asc",
+                                        "enum": [
+                                            "asc",
+                                            "desc"
+                                        ]
+                                    },
+                                    "pageNumber": {
+                                        "description": "Nomor halaman",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "pageSize": {
+                                        "description": "Jumlah data per halaman",
+                                        "type": "integer",
+                                        "example": 10
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Data pegawai dengan pagination",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "no": {
+                                                        "description": "Nomor urut",
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nip": {
+                                                        "type": "string",
+                                                        "example": "197503152000031001"
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "Budi Santoso"
+                                                    },
+                                                    "jabatan": {
+                                                        "type": "string",
+                                                        "example": "Kepala Sekretariat Utama"
+                                                    },
+                                                    "unitKerja": {
+                                                        "type": "string",
+                                                        "example": "Sekretariat Utama"
+                                                    },
+                                                    "golongan": {
+                                                        "type": "string",
+                                                        "example": "IV/e"
+                                                    },
+                                                    "jenisKelamin": {
+                                                        "type": "string",
+                                                        "example": "L"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "pageNumber": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "pageSize": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 50
+                                                },
+                                                "totalPages": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "sortColumn": {
+                                                    "type": "string",
+                                                    "example": "id"
+                                                },
+                                                "sortColumnDir": {
+                                                    "type": "string",
+                                                    "example": "asc"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/employees/all": {
+            "post": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Semua data pegawai",
+                "description": "Mendapatkan semua data pegawai tanpa pagination (untuk cetak/export)",
+                "operationId": "5b807b4bf270b35354cea1e1b76232dd",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "unitKerja": {
+                                        "type": "string",
+                                        "example": "Sekretariat Utama"
+                                    },
+                                    "golongan": {
+                                        "type": "string",
+                                        "example": "IV/e"
+                                    },
+                                    "jenisKelamin": {
+                                        "type": "string",
+                                        "example": "L",
+                                        "enum": [
+                                            "L",
+                                            "P"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Semua data pegawai",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/employees/detail": {
+            "post": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Detail pegawai",
+                "description": "Mendapatkan detail satu pegawai berdasarkan ID",
+                "operationId": "d99d16ab79041542ba400a45465ead09",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "ID pegawai",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Detail pegawai",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pegawai tidak ditemukan"
+                    }
+                }
+            }
+        },
+        "/api/employees/create": {
+            "post": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Tambah pegawai baru",
+                "description": "Menambahkan data pegawai baru",
+                "operationId": "070a17164a3031cc8a80ca0a719980d9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nip",
+                                    "nama",
+                                    "tempat_lahir",
+                                    "tanggal_lahir",
+                                    "jenis_kelamin",
+                                    "alamat",
+                                    "golongan",
+                                    "jabatan",
+                                    "tempat_tugas",
+                                    "agama",
+                                    "unit_kerja"
+                                ],
+                                "properties": {
+                                    "nip": {
+                                        "type": "string",
+                                        "example": "19680315199003001",
+                                        "maxLength": 20
+                                    },
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "Saifulloh Rifai",
+                                        "maxLength": 100
+                                    },
+                                    "tempat_lahir": {
+                                        "type": "string",
+                                        "example": "Banjarnegara",
+                                        "maxLength": 50
+                                    },
+                                    "tanggalLahir": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1968-03-15"
+                                    },
+                                    "jenisKelamin": {
+                                        "type": "string",
+                                        "example": "L",
+                                        "enum": [
+                                            "L",
+                                            "P"
+                                        ]
+                                    },
+                                    "alamat": {
+                                        "type": "string",
+                                        "example": "Jl. Melon No.16 Dian Asri"
+                                    },
+                                    "golongan": {
+                                        "type": "string",
+                                        "example": "IV/e",
+                                        "maxLength": 5
+                                    },
+                                    "eselon": {
+                                        "type": "string",
+                                        "example": "I",
+                                        "maxLength": 5
+                                    },
+                                    "jabatan": {
+                                        "type": "string",
+                                        "example": "Kepala Sekretariat Utama",
+                                        "maxLength": 150
+                                    },
+                                    "tempat_tugas": {
+                                        "type": "string",
+                                        "example": "Jakarta",
+                                        "maxLength": 100
+                                    },
+                                    "agama": {
+                                        "type": "string",
+                                        "example": "Islam",
+                                        "maxLength": 20
+                                    },
+                                    "unit_kerja": {
+                                        "type": "string",
+                                        "example": "Sekretariat Utama",
+                                        "maxLength": 100
+                                    },
+                                    "no_hp": {
+                                        "type": "string",
+                                        "example": "081234567890",
+                                        "maxLength": 20
+                                    },
+                                    "npwp": {
+                                        "type": "string",
+                                        "example": "12.345.678.9-001.000",
+                                        "maxLength": 25
+                                    },
+                                    "foto": {
+                                        "type": "string",
+                                        "example": "http://localhost:8000/storage/photos/abc.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data pegawai berhasil ditambahkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pegawai berhasil ditambahkan"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nip": {
+                                                    "type": "string",
+                                                    "example": "19680315199003001"
+                                                },
+                                                "nama": {
+                                                    "type": "string",
+                                                    "example": "Saifulloh Rifai"
+                                                },
+                                                "tempatLahir": {
+                                                    "type": "string",
+                                                    "example": "Banjarnegara"
+                                                },
+                                                "tanggalLahir": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "1968-03-15"
+                                                },
+                                                "jenisKelamin": {
+                                                    "type": "string",
+                                                    "example": "L",
+                                                    "enum": [
+                                                        "L",
+                                                        "P"
+                                                    ]
+                                                },
+                                                "alamat": {
+                                                    "type": "string",
+                                                    "example": "Jl. Melon No.16 Dian Asri"
+                                                },
+                                                "golongan": {
+                                                    "type": "string",
+                                                    "example": "IV/e"
+                                                },
+                                                "eselon": {
+                                                    "type": "string",
+                                                    "example": "I"
+                                                },
+                                                "jabatan": {
+                                                    "type": "string",
+                                                    "example": "Kepala Sekretariat Utama"
+                                                },
+                                                "tempatTugas": {
+                                                    "type": "string",
+                                                    "example": "Jakarta"
+                                                },
+                                                "agama": {
+                                                    "type": "string",
+                                                    "example": "Islam"
+                                                },
+                                                "unitKerja": {
+                                                    "type": "string",
+                                                    "example": "Sekretariat Utama"
+                                                },
+                                                "noHp": {
+                                                    "type": "string",
+                                                    "example": "081234567890"
+                                                },
+                                                "npwp": {
+                                                    "type": "string",
+                                                    "example": "12.345.678.9-001.000"
+                                                },
+                                                "foto": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/storage/photos/abc.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                }
+            }
+        },
+        "/api/employees/update": {
+            "post": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Update data pegawai",
+                "description": "Mengupdate data pegawai yang sudah ada",
+                "operationId": "530e913a66a46fae2831707e47d4e7ea",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "nip": {
+                                        "type": "string",
+                                        "example": "19680315199003001",
+                                        "maxLength": 20
+                                    },
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "Saifulloh Rifai",
+                                        "maxLength": 100
+                                    },
+                                    "tempat_lahir": {
+                                        "type": "string",
+                                        "example": "Banjarnegara",
+                                        "maxLength": 50
+                                    },
+                                    "tanggalLahir": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "1968-03-15"
+                                    },
+                                    "jenisKelamin": {
+                                        "type": "string",
+                                        "example": "L",
+                                        "enum": [
+                                            "L",
+                                            "P"
+                                        ]
+                                    },
+                                    "alamat": {
+                                        "type": "string",
+                                        "example": "Jl. Melon No.16 Dian Asri"
+                                    },
+                                    "golongan": {
+                                        "type": "string",
+                                        "example": "IV/e",
+                                        "maxLength": 5
+                                    },
+                                    "eselon": {
+                                        "type": "string",
+                                        "example": "I",
+                                        "maxLength": 5
+                                    },
+                                    "jabatan": {
+                                        "type": "string",
+                                        "example": "Kepala Sekretariat Utama",
+                                        "maxLength": 150
+                                    },
+                                    "tempat_tugas": {
+                                        "type": "string",
+                                        "example": "Jakarta",
+                                        "maxLength": 100
+                                    },
+                                    "agama": {
+                                        "type": "string",
+                                        "example": "Islam",
+                                        "maxLength": 20
+                                    },
+                                    "unit_kerja": {
+                                        "type": "string",
+                                        "example": "Sekretariat Utama",
+                                        "maxLength": 100
+                                    },
+                                    "no_hp": {
+                                        "type": "string",
+                                        "example": "081234567890",
+                                        "maxLength": 20
+                                    },
+                                    "npwp": {
+                                        "type": "string",
+                                        "example": "12.345.678.9-001.000",
+                                        "maxLength": 25
+                                    },
+                                    "foto": {
+                                        "type": "string",
+                                        "example": "http://localhost:8000/storage/photos/abc.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Data pegawai berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pegawai berhasil diperbarui"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "nip": {
+                                                    "type": "string",
+                                                    "example": "19680315199003001"
+                                                },
+                                                "nama": {
+                                                    "type": "string",
+                                                    "example": "Saifulloh Rifai"
+                                                },
+                                                "tempatLahir": {
+                                                    "type": "string",
+                                                    "example": "Banjarnegara"
+                                                },
+                                                "tanggalLahir": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "1968-03-15"
+                                                },
+                                                "jenisKelamin": {
+                                                    "type": "string",
+                                                    "example": "L",
+                                                    "enum": [
+                                                        "L",
+                                                        "P"
+                                                    ]
+                                                },
+                                                "alamat": {
+                                                    "type": "string",
+                                                    "example": "Jl. Melon No.16 Dian Asri"
+                                                },
+                                                "golongan": {
+                                                    "type": "string",
+                                                    "example": "IV/e"
+                                                },
+                                                "eselon": {
+                                                    "type": "string",
+                                                    "example": "I"
+                                                },
+                                                "jabatan": {
+                                                    "type": "string",
+                                                    "example": "Kepala Sekretariat Utama"
+                                                },
+                                                "tempatTugas": {
+                                                    "type": "string",
+                                                    "example": "Jakarta"
+                                                },
+                                                "agama": {
+                                                    "type": "string",
+                                                    "example": "Islam"
+                                                },
+                                                "unitKerja": {
+                                                    "type": "string",
+                                                    "example": "Sekretariat Utama"
+                                                },
+                                                "noHp": {
+                                                    "type": "string",
+                                                    "example": "081234567890"
+                                                },
+                                                "npwp": {
+                                                    "type": "string",
+                                                    "example": "12.345.678.9-001.000"
+                                                },
+                                                "foto": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/storage/photos/abc.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pegawai tidak ditemukan"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                }
+            }
+        },
+        "/api/employees/delete": {
+            "post": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "Hapus pegawai",
+                "description": "Menghapus data pegawai (soft delete)",
+                "operationId": "cbcdbf8283847ad816228cca3910ba53",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "description": "ID pegawai",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Data pegawai berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Data pegawai berhasil dihapus"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Pegawai tidak ditemukan"
+                    }
+                }
+            }
+        },
+        "/api/employees/units": {
+            "post": {
+                "tags": [
+                    "Employees"
+                ],
+                "summary": "List unit kerja",
+                "description": "Mendapatkan daftar unit kerja unik",
+                "operationId": "f5bd65c07d10c694308140d9b98f0f27",
+                "responses": {
+                    "200": {
+                        "description": "Daftar unit kerja",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string",
+                                                "example": "Sekretariat Utama"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/upload/photo": {
+            "post": {
+                "tags": [
+                    "Upload"
+                ],
+                "summary": "Upload foto pegawai",
+                "description": "Upload foto pegawai (jpg/png, max 2MB)",
+                "operationId": "f1f70350f7c9891f02c2559849aaacb0",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "File gambar (jpg/png, max 2MB)",
+                                        "type": "string",
+                                        "format": "binary"
+                                    },
+                                    "employee_id": {
+                                        "description": "ID pegawai (opsional)",
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Foto berhasil diupload",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8000/storage/photos/uuid-filename.jpg"
+                                                },
+                                                "filename": {
+                                                    "type": "string",
+                                                    "example": "uuid-filename.jpg"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                }
+            }
+        },
+        "/api/upload/photo/delete": {
+            "post": {
+                "tags": [
+                    "Upload"
+                ],
+                "summary": "Hapus foto pegawai",
+                "description": "Menghapus foto pegawai berdasarkan URL",
+                "operationId": "37c3a72a66b6201a7c33f822300f0474",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "url"
+                                ],
+                                "properties": {
+                                    "url": {
+                                        "description": "URL foto yang akan dihapus",
+                                        "type": "string",
+                                        "example": "http://localhost:8000/storage/photos/uuid-filename.jpg"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Foto berhasil dihapus",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Foto berhasil dihapus"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                }
+            }
+        },
+        "/api/health": {
+            "get": {
+                "tags": [
+                    "Health"
+                ],
+                "summary": "Check API health",
+                "description": "Health check endpoint",
+                "operationId": "e600c9a1d7f5dfbdfb338c1f9033c6fe",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://localhost:8000",
+                        "description": "API Server"
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
+            "name": "Employees",
+            "description": "Employees"
+        },
+        {
+            "name": "Upload",
+            "description": "Upload"
+        },
+        {
+            "name": "Health",
+            "description": "Health"
+        }
+    ],
+    "security": [
+        {
+            "sanctum": []
+        }
+    ]
+}

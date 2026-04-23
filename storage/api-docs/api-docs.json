@@ -1,0 +1,789 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SIMPEG API",
+    "version": "1.0.0",
+    "description": "API Documentation untuk SIMPEG (Sistem Informasi Manajemen Pegawai) BIG - Badan Informasi Geospasial",
+    "contact": {
+      "email": "admin@big.go.id"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000",
+      "description": "API Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "sanctum": {
+        "type": "apiKey",
+        "description": "Enter token in format (Bearer {token})",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "admin"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "admin123"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1
+              },
+              "name": {
+                "type": "string",
+                "example": "Administrator"
+              },
+              "username": {
+                "type": "string",
+                "example": "admin"
+              },
+              "role": {
+                "type": "string",
+                "enum": ["admin", "operator", "viewer"],
+                "example": "admin"
+              },
+              "unit_kerja": {
+                "type": "string",
+                "example": "Semua Unit"
+              },
+              "token": {
+                "type": "string",
+                "example": "1|abc123xyz..."
+              }
+            }
+          }
+        }
+      },
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "nip": {
+            "type": "string",
+            "example": "19680315199003001"
+          },
+          "nama": {
+            "type": "string",
+            "example": "Saifulloh Rifai"
+          },
+          "tempat_lahir": {
+            "type": "string",
+            "example": "Banjarnegara"
+          },
+          "tanggal_lahir": {
+            "type": "string",
+            "format": "date",
+            "example": "1968-03-15"
+          },
+          "jenis_kelamin": {
+            "type": "string",
+            "enum": ["L", "P"],
+            "example": "L"
+          },
+          "alamat": {
+            "type": "string",
+            "example": "Jl. Melon No.16 Dian Asri"
+          },
+          "golongan": {
+            "type": "string",
+            "example": "IV/e"
+          },
+          "eselon": {
+            "type": "string",
+            "example": "I"
+          },
+          "jabatan": {
+            "type": "string",
+            "example": "Kepala Sekretariat Utama"
+          },
+          "tempat_tugas": {
+            "type": "string",
+            "example": "Jakarta"
+          },
+          "agama": {
+            "type": "string",
+            "example": "Islam"
+          },
+          "unit_kerja": {
+            "type": "string",
+            "example": "Sekretariat Utama"
+          },
+          "no_hp": {
+            "type": "string",
+            "example": "081234567890"
+          },
+          "npwp": {
+            "type": "string",
+            "example": "12.345.678.9-001.000"
+          },
+          "foto": {
+            "type": "string",
+            "example": "http://localhost:8000/storage/photos/abc.jpg"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EmployeeListRequest": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Pencarian berdasarkan nama, nip, jabatan, atau unit kerja"
+          },
+          "unit_kerja": {
+            "type": "string"
+          },
+          "golongan": {
+            "type": "string"
+          },
+          "jenis_kelamin": {
+            "type": "string",
+            "enum": ["L", "P"]
+          },
+          "eselon": {
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "example": 1
+          },
+          "limit": {
+            "type": "integer",
+            "example": 10
+          }
+        }
+      },
+      "PaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Employee"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "integer"
+              },
+              "limit": {
+                "type": "integer"
+              },
+              "total": {
+                "type": "integer"
+              },
+              "total_pages": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login user",
+        "description": "Autentikasi user dengan username dan password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login berhasil",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Username atau password salah",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "success": false,
+                  "message": "Username atau password salah"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout user",
+        "description": "Logout user dan hapus token autentikasi",
+        "security": [{"sanctum": []}],
+        "responses": {
+          "200": {
+            "description": "Logout berhasil",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Logout berhasil"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/verify": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Verify token",
+        "description": "Verifikasi token aktif dan dapat data user yang sedang login",
+        "security": [{"sanctum": []}],
+        "responses": {
+          "200": {
+            "description": "Token valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "integer"},
+                        "name": {"type": "string"},
+                        "username": {"type": "string"},
+                        "role": {"type": "string"},
+                        "unit_kerja": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/profile": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Get profile",
+        "description": "Mendapatkan data profile user yang sedang login",
+        "security": [{"sanctum": []}],
+        "responses": {
+          "200": {
+            "description": "Data profile user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/employees/list": {
+      "post": {
+        "tags": ["Employees"],
+        "summary": "Daftar pegawai dengan pagination",
+        "description": "Mendapatkan daftar pegawai dengan filter dan pagination",
+        "security": [{"sanctum": []}],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmployeeListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data pegawai dengan pagination",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/employees/all": {
+      "post": {
+        "tags": ["Employees"],
+        "summary": "Semua data pegawai",
+        "description": "Mendapatkan semua data pegawai tanpa pagination (untuk cetak/export)",
+        "security": [{"sanctum": []}],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "unit_kerja": {"type": "string"},
+                  "golongan": {"type": "string"},
+                  "jenis_kelamin": {"type": "string", "enum": ["L", "P"]}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Semua data pegawai",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Employee"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/employees/detail": {
+      "post": {
+        "tags": ["Employees"],
+        "summary": "Detail pegawai",
+        "description": "Mendapatkan detail satu pegawai berdasarkan ID",
+        "security": [{"sanctum": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Detail pegawai",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                      "$ref": "#/components/schemas/Employee"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pegawai tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/employees/create": {
+      "post": {
+        "tags": ["Employees"],
+        "summary": "Tambah pegawai baru",
+        "description": "Menambahkan data pegawai baru",
+        "security": [{"sanctum": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nip", "nama", "tempat_lahir", "tanggal_lahir", "jenis_kelamin", "alamat", "golongan", "jabatan", "tempat_tugas", "agama", "unit_kerja"],
+                "properties": {
+                  "nip": {"type": "string", "maxLength": 20, "example": "19680315199003001"},
+                  "nama": {"type": "string", "maxLength": 100, "example": "Saifulloh Rifai"},
+                  "tempat_lahir": {"type": "string", "maxLength": 50, "example": "Banjarnegara"},
+                  "tanggal_lahir": {"type": "string", "format": "date", "example": "1968-03-15"},
+                  "jenis_kelamin": {"type": "string", "enum": ["L", "P"], "example": "L"},
+                  "alamat": {"type": "string", "example": "Jl. Melon No.16 Dian Asri"},
+                  "golongan": {"type": "string", "maxLength": 5, "example": "IV/e"},
+                  "eselon": {"type": "string", "maxLength": 5, "example": "I"},
+                  "jabatan": {"type": "string", "maxLength": 150, "example": "Kepala Sekretariat Utama"},
+                  "tempat_tugas": {"type": "string", "maxLength": 100, "example": "Jakarta"},
+                  "agama": {"type": "string", "maxLength": 20, "example": "Islam"},
+                  "unit_kerja": {"type": "string", "maxLength": 100, "example": "Sekretariat Utama"},
+                  "no_hp": {"type": "string", "maxLength": 20, "example": "081234567890"},
+                  "npwp": {"type": "string", "maxLength": 25, "example": "12.345.678.9-001.000"},
+                  "foto": {"type": "string", "example": "http://localhost:8000/storage/photos/abc.jpg"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Data pegawai berhasil ditambahkan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "message": {"type": "string"},
+                    "data": {
+                      "$ref": "#/components/schemas/Employee"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validasi gagal"
+          }
+        }
+      }
+    },
+    "/api/employees/update": {
+      "post": {
+        "tags": ["Employees"],
+        "summary": "Update data pegawai",
+        "description": "Mengupdate data pegawai yang sudah ada",
+        "security": [{"sanctum": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": {"type": "integer", "example": 1},
+                  "nama": {"type": "string", "maxLength": 100},
+                  "golongan": {"type": "string", "maxLength": 5},
+                  "jabatan": {"type": "string", "maxLength": 150}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data pegawai berhasil diperbarui",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "message": {"type": "string"},
+                    "data": {
+                      "$ref": "#/components/schemas/Employee"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pegawai tidak ditemukan"
+          },
+          "422": {
+            "description": "Validasi gagal"
+          }
+        }
+      }
+    },
+    "/api/employees/delete": {
+      "post": {
+        "tags": ["Employees"],
+        "summary": "Hapus pegawai",
+        "description": "Menghapus data pegawai (soft delete)",
+        "security": [{"sanctum": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["id"],
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data pegawai berhasil dihapus",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Data pegawai berhasil dihapus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pegawai tidak ditemukan"
+          }
+        }
+      }
+    },
+    "/api/employees/units": {
+      "post": {
+        "tags": ["Employees"],
+        "summary": "List unit kerja",
+        "description": "Mendapatkan daftar unit kerja unik",
+        "security": [{"sanctum": []}],
+        "responses": {
+          "200": {
+            "description": "Daftar unit kerja",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "Sekretariat Utama"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/upload/photo": {
+      "post": {
+        "tags": ["Upload"],
+        "summary": "Upload foto pegawai",
+        "description": "Upload foto pegawai (jpg/png, max 2MB)",
+        "security": [{"sanctum": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "File gambar (jpg/png, max 2MB)"
+                  },
+                  "employee_id": {
+                    "type": "integer",
+                    "description": "ID pegawai (opsional)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Foto berhasil diupload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "example": "http://localhost:8000/storage/photos/uuid-filename.jpg"
+                        },
+                        "filename": {
+                          "type": "string",
+                          "example": "uuid-filename.jpg"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validasi gagal"
+          }
+        }
+      }
+    },
+    "/api/upload/photo/delete": {
+      "post": {
+        "tags": ["Upload"],
+        "summary": "Hapus foto pegawai",
+        "description": "Menghapus foto pegawai berdasarkan URL",
+        "security": [{"sanctum": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "http://localhost:8000/storage/photos/uuid-filename.jpg"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Foto berhasil dihapus",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Foto berhasil dihapus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validasi gagal"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "Employees",
+      "description": "Employee management endpoints"
+    },
+    {
+      "name": "Upload",
+      "description": "File upload endpoints"
+    }
+  ]
+}
