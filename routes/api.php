@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\UploadController;
+use Illuminate\Support\Facades\DB;
 
 // ─────────────────────────────────────────────────────────
 //  AUTH SERVICE
@@ -15,6 +16,39 @@ Route::prefix('auth')->group(function () {
 });
 
 // ─────────────────────────────────────────────────────────
+//  MASTER DATA SERVICE (Direct from master tables)
+// ─────────────────────────────────────────────────────────
+Route::middleware('auth:sanctum')->prefix('master')->group(function () {
+    Route::post('/unit-kerjas', function () {
+        return response()->json([
+            'success' => true,
+            'data' => DB::table('unit_kerjas')->orderBy('nama')->get(['id', 'nama', 'kode'])
+        ]);
+    });
+
+    Route::post('/agamas', function () {
+        return response()->json([
+            'success' => true,
+            'data' => DB::table('agamas')->orderBy('nama')->get(['id', 'nama'])
+        ]);
+    });
+
+    Route::post('/golongans', function () {
+        return response()->json([
+            'success' => true,
+            'data' => DB::table('golongans')->orderBy('nama')->get(['id', 'nama', 'grade', 'keterangan'])
+        ]);
+    });
+
+    Route::post('/eselons', function () {
+        return response()->json([
+            'success' => true,
+            'data' => DB::table('eselons')->orderBy('nama')->get(['id', 'nama', 'keterangan'])
+        ]);
+    });
+});
+
+// ─────────────────────────────────────────────────────────
 //  EMPLOYEE SERVICE
 // ─────────────────────────────────────────────────────────
 Route::middleware('auth:sanctum')->prefix('employees')->group(function () {
@@ -24,7 +58,7 @@ Route::middleware('auth:sanctum')->prefix('employees')->group(function () {
     Route::post('/create', [EmployeeController::class, 'create']); // tambah pegawai
     Route::post('/update', [EmployeeController::class, 'update']); // ubah pegawai
     Route::post('/delete', [EmployeeController::class, 'delete']); // hapus pegawai
-    Route::post('/units',  [EmployeeController::class, 'units']);  // list unit kerja
+    Route::post('/units',  [EmployeeController::class, 'units']);  // list unit kerja (deprecated - use /master/unit-kerjas)
 });
 
 // ─────────────────────────────────────────────────────────
