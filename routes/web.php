@@ -2,8 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 
+// API Root Endpoint
 Route::get('/', function () {
-    return view('welcome');
+    return response()->json([
+        'success' => true,
+        'message' => 'SIMPEG API is running 🚀',
+        'version' => '1.0.0',
+        'endpoints' => [
+            'api_docs' => url('/docs'),
+            'api_auth' => url('/api/auth/login'),
+            'api_employees' => url('/api/employees/list'),
+        ],
+        'documentation' => url('/docs'),
+    ]);
 });
 
 // Override L5-Swagger docs route untuk handle file JSON dengan path parameter
