@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             \App\Http\Middleware\CamelCaseResponse::class,
         ]);
+
+        // Enable CORS for API routes
+        $middleware->useCors();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
