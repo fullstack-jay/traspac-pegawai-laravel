@@ -60,7 +60,9 @@ class UploadController extends Controller
 
             // Upload ke S3/R2 (bukan local storage)
             $path = Storage::disk('s3')->putFileAs('photos', $file, $filename);
-            $url  = Storage::disk('s3')->url($path);
+
+            // Generate URL yang lengkap dengan path file
+            $url = env('AWS_URL') . '/photos/' . $filename;
 
             return response()->json([
                 'success' => true,
