@@ -55,15 +55,17 @@ class UploadController extends Controller
                 'employee_id' => 'nullable|integer',
             ]);
 
-            $file      = $request->file('file');
-            $filename  = Str::uuid() . '.' . $file->getClientOriginalExtension();
-            $path      = $file->storeAs('photos', $filename);
-            $url       = Storage::url($path);
+            $file     = $request->file('file');
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+            // Upload ke S3/R2 (bukan local storage)
+            $path = Storage::disk('s3')->putFileAs('photos', $file, $filename);
+            $url  = Storage::disk('s3')->url($path);
 
             return response()->json([
                 'success' => true,
                 'data'    => [
-                    'url'      => url($url),
+                    'url'      => $url,
                     'filename' => $filename,
                 ],
             ], 200);
@@ -119,8 +121,8 @@ class UploadController extends Controller
         // Ekstrak path dari URL
         $path = 'photos/' . basename($request->url);
 
-        if (Storage::exists($path)) {
-            Storage::delete($path);
+        if (Storage::disk('s3')->exists($path)) {
+            Storage::disk('s3')->delete($path);
         }
 
         return response()->json([

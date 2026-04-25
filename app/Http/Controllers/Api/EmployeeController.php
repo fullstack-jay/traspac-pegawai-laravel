@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use OpenApi\Attributes as OA;
 
 class EmployeeController extends Controller
@@ -475,10 +476,15 @@ class EmployeeController extends Controller
 
         $employee = Employee::findOrFail($request->id);
 
-        // Hapus foto jika ada
+        // Hapus foto dari S3 jika ada
         if ($employee->foto) {
-            $path = str_replace('/storage/', 'public/', $employee->foto);
-            \Storage::delete($path);
+            // Ekstrak filename dari URL S3
+            $filename = basename($employee->foto);
+            $path = 'photos/' . $filename;
+
+            if (Storage::disk('s3')->exists($path)) {
+                Storage::disk('s3')->delete($path);
+            }
         }
 
         $employee->delete(); // soft delete
