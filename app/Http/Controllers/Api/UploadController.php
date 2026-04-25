@@ -61,8 +61,8 @@ class UploadController extends Controller
             // Upload ke S3/R2 dengan visibility public
             $path = Storage::disk('s3')->putFileAs('photos', $file, $filename, 'public');
 
-            // Generate URL yang lengkap dengan path file
-            $url = env('AWS_URL') . '/photos/' . $filename;
+            // Generate URL otomatis dengan bucket name yang benar
+            $url = Storage::disk('s3')->url($path);
 
             return response()->json([
                 'success' => true,
