@@ -58,8 +58,8 @@ class UploadController extends Controller
             $file     = $request->file('file');
             $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
 
-            // Upload ke S3/R2 (bukan local storage)
-            $path = Storage::disk('s3')->putFileAs('photos', $file, $filename);
+            // Upload ke S3/R2 dengan visibility public
+            $path = Storage::disk('s3')->putFileAs('photos', $file, $filename, 'public');
 
             // Generate URL yang lengkap dengan path file
             $url = env('AWS_URL') . '/photos/' . $filename;
